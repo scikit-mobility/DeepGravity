@@ -148,34 +148,3 @@ class FlowDataset(torch.utils.data.Dataset):
 
         return sampled_trX, sampled_trT, sampled_origins
 
-    def __getitem_tile__(self, index: int) -> Tuple[Any, Any]:
-        'Generates one sample of data (one tile)'
-
-        tileid2oa2features2vals = self.tileid2oa2features2vals
-        o2d2flow = self.o2d2flow
-        oa2features = self.oa2features
-        oa2centroid = self.oa2centroid
-        dim_dests = self.dim_dests
-        frac_true_dest = self.frac_true_dest
-
-        # Select sample (tile)
-        tile_ID = self.list_IDs[index]
-        #print('tile_ID: %s'%tile_ID)
-
-        # Load data and get flows
-
-        # get all the locations in tile_ID
-        sampled_origins = list(tileid2oa2features2vals[tile_ID].keys())
-
-        # Select a subset of OD pairs
-        train_locs = sampled_origins
-        all_locs_in_train_region = train_locs
-        size_train_dest = min(dim_dests, len(all_locs_in_train_region))
-        sampled_dests = [self.get_destinations(oa, size_train_dest, all_locs_in_train_region)
-                         for oa in sampled_origins]
-
-        # get the features and flows
-        sampled_trX, sampled_trT = self.get_X_T(sampled_origins, sampled_dests)
-
-        return sampled_trX, sampled_trT
-
