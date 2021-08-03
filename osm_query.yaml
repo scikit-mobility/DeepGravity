@@ -1,0 +1,125 @@
+planet_osm_point:
+  types:
+    - points
+  select:
+    - access
+    - aeroway
+    - amenity
+    - beds
+    - building
+    - capacity
+    - denomination
+    - emergency
+    - fuel
+    - 'health_facility:bed'
+    - 'health_facility:level'
+    - 'health_facility:type'
+    - healthcare
+    - historic
+    - 'isced:level'
+    - landuse
+    - leisure
+    - 'medical_system:western'
+    - name
+    - opening_hours
+    - operator
+    - 'operator:type'
+    - public_transport
+    - religion
+    - rooms
+    - shop
+    - 'staff_count:doctors'
+    - 'staff_count:nurses'
+    - status
+    - 'toilets:disposal'
+    - 'toilets:handwashing'
+    - tourism
+  where:
+    - building IS NOT NULL
+    - 'shop IS NOT NULL OR tourism IS NOT NULL OR amenity IN (''marketplace'',''restaurant'',''fast_food'',''cafe'',''bar'',''pub'') OR office IS NOT NULL'
+    - 'amenity IN (''kindergarten'', ''school'', ''college'', ''university'',''language_school'') OR office=''educational_institution'''
+    - 'emergency IS NOT NULL OR amenity IN (''police'',''fire_station'')'
+    - 'healthcare IS NOT NULL OR amenity IN (''doctors'', ''dentist'', ''clinic'', ''toilets'', ''hospital'', ''pharmacy'') OR shop IN (''herbalist'',''nutrition_supplements'')'
+    - landuse IS NOT NULL OR leisure='park' OR amenity='grave_yard'
+    - amenity='fuel'
+    - amenity='place_of_worship'
+    - amenity='community_centre'
+    - amenity='library'
+    - historic IS NOT NULL
+    - 'sport IS NOT NULL OR leisure IN (''stadium, swimming pool, pitch, sport_centre'')'
+    - aeroway IS NOT NULL OR building='aerodrome'
+    - amenity='bus_station'
+planet_osm_polygon:
+  types:
+    - polygons
+  select:
+    - access
+    - aeroway
+    - amenity
+    - beds
+    - building
+    - capacity
+    - denomination
+    - emergency
+    - fuel
+    - 'health_facility:bed'
+    - 'health_facility:level'
+    - 'health_facility:type'
+    - healthcare
+    - historic
+    - 'isced:level'
+    - landuse
+    - layer
+    - leisure
+    - 'medical_system:western'
+    - name
+    - opening_hours
+    - operator
+    - 'operator:type'
+    - public_transport
+    - railway
+    - religion
+    - rooms
+    - shop
+    - 'staff_count:doctors'
+    - 'staff_count:nurses'
+    - status
+    - 'toilets:disposal'
+    - 'toilets:handwashing'
+    - tourism
+  where:
+    - building IS NOT NULL
+    - 'shop IS NOT NULL OR tourism IS NOT NULL OR amenity IN (''marketplace'',''restaurant'',''fast_food'',''cafe'',''bar'',''pub'') OR office IS NOT NULL'
+    - 'amenity IN (''kindergarten'', ''school'', ''college'', ''university'',''language_school'') OR office=''educational_institution'''
+    - 'emergency IS NOT NULL OR amenity IN (''police'',''fire_station'')'
+    - 'healthcare IS NOT NULL OR amenity IN (''doctors'', ''dentist'', ''clinic'', ''toilets'', ''hospital'', ''pharmacy'') OR shop IN (''herbalist'',''nutrition_supplements'')'
+    - landuse IS NOT NULL OR leisure='park' OR amenity='grave_yard'
+    - amenity='fuel'
+    - amenity='place_of_worship'
+    - amenity='community_centre'
+    - amenity='library'
+    - historic IS NOT NULL
+    - 'sport IS NOT NULL OR leisure IN (''stadium, swimming pool, pitch, sport_centre'')'
+    - aeroway IS NOT NULL OR building='aerodrome'
+    - building='train_station'
+    - amenity='bus_station'
+planet_osm_line:
+  types:
+    - lines
+  select:
+    - aeroway
+    - bridge
+    - building
+    - highway
+    - layer
+    - name
+    - oneway
+    - railway
+    - smoothness
+    - surface
+    - tunnel
+    - width
+  where:
+    - aeroway IS NOT NULL OR building='aerodrome'
+    - highway IS NOT NULL
+    - railway IS NOT NULL
