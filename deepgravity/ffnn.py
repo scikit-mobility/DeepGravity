@@ -18,8 +18,8 @@ except ModuleNotFoundError:
 
 # Paths
 
-osm_dir = '/Users/fs13378/Documents/LARGE_data/OSM/'
-uk_dir = '/Users/fs13378/Documents/LARGE_data/UK/'
+osm_dir = '/path/to/osm/data/'
+uk_dir = '/path/to/uk/data/'
 
 
 def df_to_dict(df):
@@ -158,18 +158,6 @@ def load_oa_features(tile_id='264', tileid2oa2features=None, oa_gdf=None, flow_d
 
 # Compute features for train and test sets
 
-# def get_features(oa_origin, oa_destination, oa_features):
-#     feats_origin = oa_features.loc[oa_origin][~oa_features.columns.isin(['centroid'])].values.astype(float)
-#     feats_dest = oa_features.loc[oa_destination][~oa_features.columns.isin(['centroid'])].values.astype(float)
-#     dist_od = distance(oa_features.loc[oa_origin]['centroid'], oa_features.loc[oa_destination]['centroid']).km
-#     return list(feats_origin) + list(feats_dest) + [dist_od]
-#
-# def get_flow(oa_origin, oa_destination, flow_df_within):
-#     try:
-#         return flow_df_within.loc[oa_origin, oa_destination]['commuters'].sum()
-#     except KeyError:
-#         return 0
-
 
 def get_features_ffnn(oa_origin, oa_destination, oa2features, oa2centroid, df, distances, k):
     # dist_od = distance(oa2centroid[oa_origin], oa2centroid[oa_destination]).km
@@ -184,12 +172,6 @@ def get_features_ffnn(oa_origin, oa_destination, oa2features, oa2centroid, df, d
         # here oa2features is oa2pop
         dist_od = earth_distance(oa2centroid[oa_origin], oa2centroid[oa_destination])
         return [np.log(oa2features[oa_origin])] + [np.log(oa2features[oa_destination])] + [dist_od]
-
-
-# def get_features(o_lalo, o_feats, oa_destination, oa2features, oa2centroid):
-# #     dist_od = distance(oa2centroid[oa_origin], oa2centroid[oa_destination]).km
-#     dist_od = earth_distance(o_lalo, oa2centroid[oa_destination])
-#     return o_feats + oa2features[oa_destination] + [dist_od]
 
 
 def get_flow(oa_origin, oa_destination, o2d2flow):
