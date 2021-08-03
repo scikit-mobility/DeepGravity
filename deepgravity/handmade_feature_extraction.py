@@ -9,19 +9,18 @@ import json
 import shapely
 import shapely.wkt
 import area
-# from geopy.distance import distance as geodistance
 from math import sqrt, sin, cos, pi, asin
 
 import statanal.dbutils as db
 
 
-USER = 'fsimini'
+USER = 'user'
 
 # Paths
 
-osm_dir = '/Users/fsimini/Documents/LARGE_data/OSM/'
-uk_dir = '/Users/fsimini/Documents/LARGE_data/UK/'
-sez_dir = '/Users/fsimini/Documents/LARGE_data/IT/pendolarismo_sezioni/'
+osm_dir = '/path/to/osm/dir/'
+uk_dir = '/path/to/uk/data/'
+sez_dir = '/path/to/uk/data/'
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -476,77 +475,6 @@ def aggregate_results(res):
     return list(np.sum(np.array(list(res.values())), axis=0))
 
 
-#
-#
-#
-# def isinside(lng_lat, bbox):
-#     lng, lat = lng_lat.xy
-#     lng, lat = lng[0], lat[0]
-#     xmin, ymin, xmax, ymax = bbox
-#     if (xmin < lng <= xmax) and (ymin < lat <= ymax):
-#         return True
-#     else:
-#         return False
-#
-# def get_geom_centroid(geom, return_lat_lng=False):
-#     if type(geom) == shapely.geometry.multipolygon.MultiPolygon:
-#         m_n = [[np.mean(pol.exterior.xy, axis=1), len(pol.exterior.xy[0])] for pol in geom]
-#         lonO, latO = np.sum([[ln*n, la*n] for (ln,la),n in m_n], axis=0) / np.sum(m_n, axis=0)[1]
-#     elif type(geom) == shapely.geometry.polygon.Polygon:
-#         lonO, latO = np.mean(geom.exterior.xy, axis=1)
-#     else:
-#         lonO, latO = np.mean(geom.xy, axis=1)
-#     if return_lat_lng:
-#         return [latO, lonO]
-#     else:
-#         return [lonO, latO]
-#
-# def extract_all_osm_features(bbox, connection, osmtable):
-#     xmin, ymin, xmax, ymax = bbox
-#     query = """SELECT * FROM {} WHERE """\
-#             """ST_Intersects(way, ST_MakeEnvelope({},{},{},{}, 4326)) ;"""\
-#             .format(osmtable, xmin, ymin, xmax, ymax)
-#     gdfbb = gpd.GeoDataFrame.from_postgis(query, connection, geom_col='way',
-#                                           index_col='osm_id')
-#     # convert geometry column to WKT before inserting into postgis
-#     gdfbb['way'] = gdfbb['way'].apply(lambda x: db.WKTElement(x.wkt, srid=4326))
-#
-# #     within_poly = """ST_GeographyFromText('%s')"""%bbox.wkt
-# #     intersection = 'ST_Intersection(way, %s)'%within_poly
-# #     query = """SELECT * """\
-# #             """, {} AS intersection """\
-# #             """FROM {} WHERE """\
-# #             """ST_Intersects(way, {}) """\
-# #             .format(intersection, osmtable, within_poly)
-# #     gdfbb = gpd.GeoDataFrame.from_postgis(query, connection, geom_col='way',
-# #                                           index_col='osm_id')
-# #     gdfbb.drop('way', 1, inplace=True)
-# #     gdfbb.rename(columns={'intersection': 'way'},  inplace=True)
-#
-#     return gdfbb
-#
-#
-# def query_bbox_intersection(geom, connection2, table='query_table'):
-#     """
-#     geom = gdf2.iloc[0].geometry
-#     """
-#     within_poly = """ST_GeographyFromText('%s')"""%geom.wkt
-#     intersection = 'ST_Intersection(way, %s)'%within_poly
-#     query = """SELECT * """\
-#             """, {} AS intersection """\
-#             """FROM {} WHERE """\
-#             """ST_Intersects(way, {}) """\
-#             .format(intersection, table, within_poly)
-#     gdf = gpd.GeoDataFrame.from_postgis(query, connection2, geom_col='way',
-#                                         index_col='osm_id')
-#
-#     gdf.drop('way', 1, inplace=True)
-#     gdf.rename(columns={'intersection': 'way'}, inplace=True)
-#     gdf['way'] = gdf['way'].apply(lambda x: shapely.wkt.loads(
-#                                             shapely.wkb.loads(x, hex=True).wkt))
-#     return gdf
-
-
 def query_all_objects_in_bbox(xmin, ymin, xmax, ymax, connection, engine2):
     # polygons
     query = """SELECT * FROM planet_osm_polygon WHERE """ \
@@ -608,7 +536,6 @@ def get_geom_centroid(geom, return_lat_lng=False):
 
 def read_zipped_shp_to_gdf(zip_file, shp_file):
     """
-    sez_dir = '/Users/fs13378/Documents/LARGE_data/comuni_italiani_istati/pendolarismo_sezioni/'
     regione = 19
     shp_file = 'R%s_11_WGS84/R%s_11_WGS84.shp' % (regione, regione)
     zip_file = sez_dir + 'R%s_11_WGS84.zip' % regione
@@ -636,41 +563,12 @@ england = {
     'output_dir': osm_dir + 'oa2handmade_features/'
 }
 
-trapani = {
-    # 'read_shp': lambda: read_shp_ita_region('19'),
-    'read_shp': (lambda: read_shp_ita_region(r) for r in ['19']),
-    'loc_ID_shp': 'SEZ2011',
-    'db_name': 'osm_ita',
-    'tess_bbox': '../data/tess_bbox_trapani.csv',
-    'output_dir': '../data/trapani/'
-}
-
-sassari = {
-    # 'read_shp': lambda: read_shp_ita_region('20'),
-    'read_shp': (lambda: read_shp_ita_region(r) for r in ['20']),
-    'loc_ID_shp': 'SEZ2011',
-    'db_name': 'osm_ita',
-    'tess_bbox': '../data/tess_bbox_sassari.csv',
-    'output_dir': '../data/sassari/'
-}
-
-padova = {
-    # 'read_shp': lambda: read_shp_ita_region('05'),
-    'read_shp': (lambda: read_shp_ita_region(r) for r in ['05']),
-    'loc_ID_shp': 'SEZ2011',
-    'db_name': 'osm_ita',
-    'tess_bbox': '../data/geo_data/tess_bbox_padova.csv',
-    'output_dir': '../data/padova/'
-}
-
 ita = {
     'read_shp': (lambda: read_shp_ita_region(r) for r in [str(i).zfill(2) for i in range(1, 21)]),
-    # 'read_shp': (lambda: read_shp_ita_region(r) for r in ['20']),
     'loc_ID_shp': 'SEZ2011',
     'db_name': 'osm_ita',
     'tess_bbox': '../data/geo_data/tess_bbox_ita.csv',
-#    'output_dir': osm_dir + 'oa2handmade_features/ita/'
-    'output_dir': '/Users/fsimini/Documents/LARGE_data/IT/'
+    'output_dir': './'
 }
 
 
@@ -678,15 +576,9 @@ def get_features(info_dict):
 
     # load OAs
     print("loading stuff")
-    # oa_gdf = info_dict['read_shp']()
 
     for read_shp_file in info_dict['read_shp']:
         oa_gdf = read_shp_file().astype({info_dict['loc_ID_shp']: 'str'})
-
-        # compute OAs centroids
-        # #    centr = oa_gdf.geometry.apply(get_geom_centroid)
-        # centr = pd.read_csv('/Users/fs13378/sda3/OSM/centroid.txt', header=None, index_col=0)
-        # oa_gdf['centroid'] = centr
 
         # Compute centroids, if not present
         if 'centroid' not in oa_gdf.columns:
@@ -704,7 +596,6 @@ def get_features(info_dict):
         engine2, connection2, cursor2 = db.connect_to_db_sqlalchemy('osm_queries', user=USER)
 
         # load tessellation
-        # tess_bbox = np.loadtxt('/Users/fs13378/sda3/OSM/tess_bbox.txt')
         tess_bbox = pd.read_csv(info_dict['tess_bbox'])
 
         # try to see if a copy of the Features dictionary is already present
@@ -718,10 +609,6 @@ def get_features(info_dict):
 
         len_bbox = len(tess_bbox)
 
-        #for ii, r in tess_bbox.iterrows():
-        #    bbox = r.values[:-1]
-        #    tile_id = str(int(r[-1]))
-        #    xmin, ymin, xmax, ymax = bbox
         for ii, r in enumerate(tess_bbox.itertuples()) :
             xmin, ymin, xmax, ymax = r.xmin, r.ymin, r.xmax, r.ymax
             bbox = np.array([xmin, ymin, xmax, ymax])
@@ -806,8 +693,5 @@ if __name__ == "__main__":
     warnings.filterwarnings('ignore')
     #warnings.resetwarnings()
 
-    #get_features(trapani)
-    #get_features(sassari)
-    #get_features(padova)
     get_features(ita)
 
