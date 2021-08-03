@@ -169,13 +169,6 @@ test_data = [oa for t in
 
 
 train_dataset = dgd.FlowDataset(train_data, **train_dataset_args)
-#kwargs = {'num_workers': 1, 'pin_memory': True} if args.device.find("gpu")!=-1 else {}
-#train_dataset = \
-#    datasets.MNIST('datasets/', train=True, download=True,
-#                   transform=transforms.Compose([
-#                       transforms.ToTensor(),
-#                       transforms.Normalize((0.1307,), (0.3081,))
-#                   ]))
 
 # Horovod: use DistributedSampler to partition the training data.
 train_sampler = torch.utils.data.distributed.DistributedSampler(
@@ -185,11 +178,6 @@ train_loader = torch.utils.data.DataLoader(
 
 
 test_dataset = dgd.FlowDataset(test_data, **test_dataset_args)
-#test_dataset = \
-#    datasets.MNIST('datasets', train=False, transform=transforms.Compose([
-#        transforms.ToTensor(),
-#        transforms.Normalize((0.1307,), (0.3081,))
-#    ]))
 
 # Horovod: use DistributedSampler to partition the test data.
 test_sampler = torch.utils.data.distributed.DistributedSampler(
@@ -200,26 +188,6 @@ test_loader = torch.utils.data.DataLoader(
 # Define model
 dim_input = len(train_dataset.get_features(train_data[0], train_data[0]))
 model = utils.instantiate_model(oa2centroid, oa2features, oa2pop, dim_input, device=torch_device, df=model_type)
-#class Net(nn.Module):
-#    def __init__(self):
-#        super(Net, self).__init__()
-#        self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
-#        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
-#        self.conv2_drop = nn.Dropout2d()
-#        self.fc1 = nn.Linear(320, 50)
-#        self.fc2 = nn.Linear(50, 10)
-#
-#    def forward(self, x):
-#        x = F.relu(F.max_pool2d(self.conv1(x), 2))
-#        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
-#        x = x.view(-1, 320)
-#        x = F.relu(self.fc1(x))
-#        x = F.dropout(x, training=self.training)
-#        x = self.fc2(x)
-#        return F.log_softmax(x)
-#
-#
-#model = Net()
 
 if args.device.find("gpu") != -1:
     # Move model to GPU.
@@ -271,14 +239,6 @@ def train(epoch):
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
-    
-        #pred = output.data.max(1, keepdim=True)[1]
-        #training_acc += pred.eq(target.data.view_as(pred)).cpu().float().sum()
-        #if batch_idx == 0:  # only for the first batch
-        #    with torch.no_grad():
-        #        model.eval()
-        #        training_acc += model.get_cpc(data[0], target[0])  # only for the first tile
-        #        model.train()
 
         if batch_idx % args.log_interval == 0:
             # Horovod: use train_sampler to determine the number of examples in
@@ -314,16 +274,8 @@ def test():
             for data, target in zip(b_data, b_target):
                 if args.cuda:
                     data, target = data.cuda(), target.cuda()
-                #output = model(data)
-                ## sum up batch loss
-                ##test_loss += F.nll_loss(output, target, size_average=False).item()
-                #test_loss += F.nll_loss(output, target).item()
                 output = model.forward(data)
                 test_loss += model.loss(output, target).item()
-     
-                # get the index of the max log-probability
-                #pred = output.data.max(1, keepdim=True)[1]
-                #test_accuracy += pred.eq(target.data.view_as(pred)).cpu().float().sum()
                 cpc = model.get_cpc(data, target)
                 test_accuracy += cpc  # only for the last origin of the first batch
                 n_origins += 1  #data.shape[1]
@@ -368,8 +320,6 @@ def evaluate():
         # save to disk
         edf = pd.DataFrame.from_dict(loc2cpc_numerator, columns=['cpc_num'], orient='index')\
                 .reset_index().rename(columns={'index': 'locID'})
-        #fname = wk_dir + 'results/loc2cpc_numerator_{}_{}_{}.csv'.format(model_type, country, no_round)
-        #edf.to_csv(fname, index=False)
 
         # compute average cpc
         oa2tile = {oa:t for t,v in tileid2oa2features2vals.items() for oa in v.keys()}
