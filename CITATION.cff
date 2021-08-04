@@ -1,0 +1,30 @@
+cff-version: 1.1.0
+message: "If you use this code, please cite this software."
+abstract: "The movements of individuals within and among cities influence key aspects of our society, such as the objective and subjective well-being, the diffusion of innovations, the spreading of epidemics, and the quality of the environment. For this reason, there is increasing interest around the challenging problem of flow generation, which consists in generating the flows between a set of geographic locations, given the characteristics of the locations and without any information about the real flows. Existing solutions to flow generation are mainly based on mechanistic approaches, such as the gravity model and the radiation model, which suffer from underfitting and overdispersion, neglect important variables such as land use and the transportation network, and cannot describe non-linear relationships between these variables. In this paper, we propose the Multi-Feature Deep Gravity (MFDG) model as an effective solution to flow generation. On the one hand, the MFDG model exploits a large number of variables (e.g., characteristics of land use and the road network; transport, food, and health facilities) extracted from voluntary geographic information data (OpenStreetMap). On the other hand, our model exploits deep neural networks to describe complex non-linear relationships between those variables. Our experiments, conducted on commuting flows in England, show that the MFDG model achieves a significant increase in the performance (up to 250\% for highly populated areas) than mechanistic models that do not use deep neural networks, or that do not exploit geographic voluntary data. Our work presents a precise definition of the flow generation problem, which is a novel task for the deep learning community working with spatio-temporal data, and proposes a deep neural network model that significantly outperforms current state-of-the-art statistical models."
+authors:
+  - family-names: Simini
+    given-names: Filippo
+    orcid: https://orcid.org/0000-0001-8675-3529
+  - family-names: Barlacchi
+    given-names: Gianni
+    orcid: https://orcid.org/0000-0002-9896-0610
+  - family-names: Luca
+    given-names: Massimiliano
+    orcid: 
+  - family-names: Pappalardo
+    given-names: Luca
+    orcid: https://orcid.org/0000-0002-1547-6007
+title: Deep Gravity
+version: 1.1.0
+doi: https://arxiv.org/abs/2012.00489
+date-released: 2021-08-03
+keywords:
+  - human mobility
+  - deep learning
+  - data science
+  - artificial intelligence
+  - explainable AI
+  - AI
+  - urban informatics
+  - research software
+license: "CC-BY-4.0"
