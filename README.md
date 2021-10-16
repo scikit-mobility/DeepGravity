@@ -7,7 +7,7 @@ Deep Gravity: enhancing mobility flows generation with deep neural networks and 
 https://arxiv.org/abs/2012.00489
 ```
 
-Please cite it if you use the code in this repository:
+Please cite the paper:
 ```
 @misc{simini2021deep,
       title={Deep Gravity: enhancing mobility flows generation with deep neural networks and geographic information}, 
@@ -18,6 +18,9 @@ Please cite it if you use the code in this repository:
       primaryClass={cs.LG}
 }
 ```
+
+and the code: [![DOI](https://zenodo.org/badge/379271033.svg)](https://zenodo.org/badge/latestdoi/379271033)
+
 
 ## Abstract
 The movements of individuals within and among cities influence critical aspects of our society, such as well-being, the spreading of epidemics, and the quality of the environment. When information about mobility flows is not available for a particular region of interest, we must rely on mathematical models to generate them.
