@@ -1,4 +1,4 @@
-# Deep Gravity: enhancing mobility flows generation with deep neural networks and geographic information
+# A Deep Gravity model for mobility flows generation
 
 a PyTorch implementation of the paper: 
 ```
