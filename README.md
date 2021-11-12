@@ -3,7 +3,8 @@
 ## Table of contents
 1. [Citing](#citing)
 2. [Abstract](#abstract)
-3. [Running Deep Gravity](#running)
+3. [Architecture of Deep Gravity](#architecture)
+4. [Running Deep Gravity](#running)
 	  - [Setup](#setup)
 	  - [Experiments](#experiments)
     - [Plot the results](#plot)
@@ -43,13 +44,50 @@ The movements of individuals within and among cities influence critical aspects 
 ![Performances of DG vs G in an highly populated area in England](https://github.com/scikit-mobility/DeepGravity/blob/master/imgs/plot.png?raw=true)
 _Figure 1. Performances in terms of Common Part of Commuters (CPC) of Deep Gravity (DG) vs the gravity model (G) in an highly populated area in England_
 
+
+<a id='architecture'></a>
+## Architecture of Deep Gravity
+To generate the flows from a given origin location (e.g., <img src="https://render.githubusercontent.com/render/math?math=l_i">), Deep Gravity uses a number of input features to compute the probability <img src="https://render.githubusercontent.com/render/math?math=p_{i,j}"> that any of the <img src="https://render.githubusercontent.com/render/math?math=n"> locations in the region of interest (e.g., <img src="https://render.githubusercontent.com/render/math?math=l_j">) is the destination of a trip from <img src="https://render.githubusercontent.com/render/math?math=l_i">. Specifically, the model output is a n-dimensional vector of probabilities <img src="https://render.githubusercontent.com/render/math?math=p_{i,j}"> for <img src="https://render.githubusercontent.com/render/math?math=j = 1, ..., n">. These probabilities are computed in three steps (see figure below).
+
+![Architecture of Deep Gravity](https://github.com/scikit-mobility/DeepGravity/blob/master/imgs/architecture.png?raw=true)
+_Figure 2. Architecture of Deep Gravity_
+
+1. The input vectors <img src="https://render.githubusercontent.com/render/math?math=x(l_i, l_j) = concat[x_i, x_j, r_{i,j}]"> for <img src="https://render.githubusercontent.com/render/math?math=j =1, \dots, n"> are obtained performing a concatenation of the following input features: <img src="https://render.githubusercontent.com/render/math?math=x_i">, the feature vector of the origin location <img src="https://render.githubusercontent.com/render/math?math=l_i">; <img src="https://render.githubusercontent.com/render/math?math=x_j"> the feature vector of the destination location <img src="https://render.githubusercontent.com/render/math?math=l_j">; and the distance between origin and destination <img src="https://render.githubusercontent.com/render/math?math=r_{i, j}">. 
+For each origin location (e.g. <img src="https://render.githubusercontent.com/render/math?math=l_i">), <img src="https://render.githubusercontent.com/render/math?math=n"> input vectors <img src="https://render.githubusercontent.com/render/math?math=x(l_i, l_j)"> with <img src="https://render.githubusercontent.com/render/math?math=j = 1, \dots, n"> are created, one for each location in the region of interest that could be a potential destination. 
+
+2. The input vectors <img src="https://render.githubusercontent.com/render/math?math=x(l_i, l_j)"> are fed in parallel to the same feed-forward neural network. The network has 15 hidden layers of dimensions 256 (the bottom six layers) and 128 (the other layers) with LeakyReLu activation function, <img src="https://render.githubusercontent.com/render/math?math=a">. Specifically, the output of hidden layer <img src="https://render.githubusercontent.com/render/math?math=h"> is given by the vector <img src="https://render.githubusercontent.com/render/math?math=z^{(0)}(l_i, l_j) = a(W^{(0)} \cdot x(l_i, l_j))"> for the first layer (<img src="https://render.githubusercontent.com/render/math?math=h=0">) and <img src="https://render.githubusercontent.com/render/math?math=z^{(h)}(l_i, l_j) = a(W^{(h)} \cdot z^{(h - 1)}(l_i, l_j))"> for <img src="https://render.githubusercontent.com/render/math?math=h>0">, where <img src="https://render.githubusercontent.com/render/math?math=W"> are matrices whose entries are parameters learned during training. 
+
+3. The output of the last layer is a scalar <img src="https://render.githubusercontent.com/render/math?math=s(l_i, l_j) \in[-\infty, +\infty]"> called score: the higher the score for a pair of locations <img src="https://render.githubusercontent.com/render/math?math=(l_i, l_j)">, the higher the probability to observe a trip from <img src="https://render.githubusercontent.com/render/math?math=l_i"> to <img src="https://render.githubusercontent.com/render/math?math=l_j"> according to the model. Finally, the scores are transformed into probabilities using a softmax function, <img src="https://render.githubusercontent.com/render/math?math=p_{i,j} = e^{s(l_i, l_j)} / \sum_{k} e^{s(l_i, l_k)}">, which transforms all scores into positive numbers that sum up to one. The generated flow between two locations is then obtained by multiplying the probability (i.e., the model's output) and the origin's total outflow.
+
+The location feature vector <img src="https://render.githubusercontent.com/render/math?math=x_i"> provides a spatial representation of an area, and it contains features describing some properties of location <img src="https://render.githubusercontent.com/render/math?math=l_i">, e.g., the total length of residential roads or the number of restaurants therein. Its dimension, <img src="https://render.githubusercontent.com/render/math?math=d">, is equal to the total number of features considered. The location features we use include the population size of each location and geographical features extracted from OpenStreetMap belonging to the following categories:
+
+- Land use areas (5 features): total area (in squared km) for each possible land use class, i.e., residential, commercial, industrial, retail and natural;
+- Road network (3 features): total length (in km) for each different types of roads, i.e., residential, main and other; 
+- Transport facilities (2 features): total count of Points Of Interest (POIs) and  buildings related to each possible transport facility, e.g., bus/train station, bus stop, car parking;
+- Food facilities (2 features): total count of POIs and  buildings related to food facilities, e.g., bar, cafe, restaurant;
+- Health facilities (2 features): total count of POIs and  buildings related to health facilities, e.g., clinic, hospital, pharmacy;
+- Education facilities (2 features): total count of POIs and  buildings related to education facilities, e.g., school, college, kindergarten; 
+- Retail facilities (2 features): total count of POIs and  buildings related to retail facilities, e.g., supermarket, department store, mall.
+
+In addition, Deep Gravity includes as feature the geographic distance, <img src="https://render.githubusercontent.com/render/math?math=r_{i, j}">, between two locations <img src="https://render.githubusercontent.com/render/math?math=l_i"> and <img src="https://render.githubusercontent.com/render/math?math=l_j">, which is defined as the distance measured along the surface of the earth between the centroids of the two polygons representing the locations. All values of features for a given location (excluding distance) are normalized dividing them by the location's area.
+
+Each flow in Deep Gravity is hence described by 39 features (18 geographic features of the origin and 18 of the destination, distance between origin and destination, and their populations). 
+
+The loss function of Deep Gravity is the cross-entropy: 
+
+<img src="https://render.githubusercontent.com/render/math?math=H = - \sum_{i} \sum_j \frac{y(l_i, l_j)}{O_i} \ln p_{i,j}">
+
+where <img src="https://render.githubusercontent.com/render/math?math=y(l_i, l_j) / O_i"> is the fraction of observed flows from <img src="https://render.githubusercontent.com/render/math?math=l_i"> that go to <img src="https://render.githubusercontent.com/render/math?math=l_j"> and <img src="https://render.githubusercontent.com/render/math?math=p_{i, j}"> is the model's probability of a unit flow from <img src="https://render.githubusercontent.com/render/math?math=l_i"> to <img src="https://render.githubusercontent.com/render/math?math=l_j">. 
+Note that the sum over <img src="https://render.githubusercontent.com/render/math?math=i"> of the cross-entropies of different origin locations follows from the assumption that flows from different locations are independent events, which allows us to apply the additive property of the cross-entropy for independent random variables. 
+
+The network is trained for 20 epochs with the RMSprop optimizer with momentum 0.9 and learning rate <img src="https://render.githubusercontent.com/render/math?math=5 \cdot 10^{-6}"> using batches of size 64 origin locations. To reduce the training time, we use negative sampling and consider up to 512 randomly selected destinations for each origin location. 
+
 <a id='running'></a>
 ## Running Deep Gravity
 
 <a id='setup'></a>
 ### Setup
-
-Please, make sure you have the following dependencies installed:
+Make sure you have the following dependencies installed:
 
 - `pytorch 1.7.1`
 - `numpy 1.19.2`
