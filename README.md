@@ -16,10 +16,7 @@
 
 If you use the code in this repository, please cite our paper:
 
-```
-Simini, F., Barlacchi, G., Luca, M., Pappalardo, L., A Deep Gravity model for mobility flows generation. 
-Nature Communications 12, 6576 (2021). https://doi.org/10.1038/s41467-021-26752-4
-```
+F. Simini, G. Barlacchi, M. Luca, L. Pappalardo, *A Deep Gravity model for mobility flows generation*, Nature Communications 12, 6576 (2021). https://doi.org/10.1038/s41467-021-26752-4
 
 ```
 @article{Simini2021,
