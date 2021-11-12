@@ -3,10 +3,11 @@
 ## Table of contents
 1. [Citing](#citing)
 2. [Abstract](#abstract)
-3. [Setup](#setup)
-4. [Running Deep Gravity](#running)
-5. [Plot the results](#plot)
-6. [Additional data](#additional_data)
+3. [Running Deep Gravity](#running)
+	  - [Setup](#setup)
+	  - [Experiments](#experiments)
+    - [Plot the results](#plot)
+    - [Additional data](#additional_data)
 
 
 <a id='citing'></a>
@@ -42,8 +43,11 @@ The movements of individuals within and among cities influence critical aspects 
 ![Performances of DG vs G in an highly populated area in England](https://github.com/scikit-mobility/DeepGravity/blob/master/imgs/plot.png?raw=true)
 _Figure 1. Performances in terms of Common Part of Commuters (CPC) of Deep Gravity (DG) vs the gravity model (G) in an highly populated area in England_
 
+<a id='running'></a>
+## Running Deep Gravity
+
 <a id='setup'></a>
-## Setup
+### Setup
 
 Please, make sure you have the following dependencies installed:
 
@@ -54,8 +58,8 @@ Please, make sure you have the following dependencies installed:
 - `scikit-mobility 1.1.0`
 - `area`
 
-<a id='running'></a>
-## Running Deep Gravity
+<a id='experiments'></a>
+### Experiments
 
 Once you installed all the packages correctly, you can run the experiments.
 
@@ -88,12 +92,12 @@ There are also some parameters related to the
 Once your model is trained, you will find the results of the test phase in a file in the results directory. The file will be named `tile2cpc_<model-type>_<country>_<no-round>.csv`. In the same folder, you will also find the trained model named `model_<model-type>_<country>_<no-round>.pt`
 
 <a id='plot'></a>
-## Plot of the results
+### Plot of the results
 
 Once you have the results for all the four models in at least a country and at least for one no-round, you can reproduce Figure 3 and Table 1 of the paper using the notebook `plot_results.ipynb`
 
 <a id='additional_data'></a>
-## Additional Data
+### Additional Data
 
 The datasets used in the experiments can be found at:
 - England
